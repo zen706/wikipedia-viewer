@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Kumbh+Sans:wght@400;700&family=Open+Sans:wght@300;400;700&family=Overpass:wght@400;700&family=Red+Hat+Text:wght@400;700&family=Roboto:wght@100;400;700;900&family=Rubik:wght@400;500;700&family=Share+Tech+Mono&display=swap');
+/* global */
+
+$color-blue: blue;
+$color-gray:gray;
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+@mixin flex-row-center {
+  display: flex;
+  justify-content: center;
+}
+@mixin mq($size) {
+  @media only screen and (min-width:$size) {
+    @content
+  }
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  min-height: 100vh;
+  @include flex-column-center();
+}
+a {
+  text-decoration: none;
+}
+.btn {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+main {
+  width: 90vw;
+  max-width: 768px;
+  padding-top:1rem;
+  padding-bottom:1rem;
+  // border: 1px solid #000;
+  text-align: center;
+  // margin: 0 auto;
+}
+section {
+  margin-bottom:1rem;
+}
+.headline {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  @include mq(576px) {
+    font-size: 2.5rem;
+    letter-spacing: 5px;
+  }
+}
+.blue {
+  color: $color-blue;
+}
+.red {
+  color: red;
+}
+.orange {
+  color: orange;
+}
+.green {
+  color: green;
+}
+.exclamation {
+  transform: rotate(20deg);
+  margin-left:0.5rem;
+  display:inline-block;
+}
+
+.random {
+  margin-bottom: 0.5rem;
+  display:block;
+}
+form {
+  margin:0 auto;
+  @include flex-row-center();
+  height: 40px;
+  @include mq(576px){
+    height:50px;
+  }
+}
+.offscreen {
+  display: none;
+}
+input {
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-right: none;
+  border-bottom:2px solid #000;
+  padding-left: 0.5rem;
+  font-size: 1.25rem;
+  &:focus{
+  outline: none;
+
+  }
+}
+
+
+.clear-btn {
+  border-left: none;
+  border-right: none;
+  padding-right:1rem;
+}
+.search-btn {
+  padding-left:0.5rem;
+  padding-right: 0.5rem;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  &:hover{
+    background-color: rgb(70, 65, 221);
+    color:white;
+  }
+}
+
+
+.result {
+  // border:1px solid #000;
+}
+article {
+  margin-bottom: 2rem;
+  text-align: left;
+}
+article a:hover {
+  text-decoration: underline;
+}
+.title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+.info {
+  display: flex;
+}
+.thumbnail {
+  margin-right: 0.5rem;
+}
+
+.result-length{
+  // text-align: left;
+  margin-bottom: 1rem;
+  color:$color-gray;
+}
