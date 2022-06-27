@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './reset.css'
 // Path dependence for import-css
-import './index.scss';
+import './style/style.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

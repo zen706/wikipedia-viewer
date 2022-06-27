@@ -7,9 +7,25 @@ const { log } = console
 function App() {
   const [wikiData, setWikiData] = useState(null)
   const [inputValue, setInputValue] = useState('')
-  const [isShow, setIsShow] = useState(true)
+  const [isShow, setIsShow] = useState(false)
+  const ref = React.useRef('')
 
   // log(inputValue, wikiData)
+  useEffect(() => {
+    toggleSearchBtnColor()
+  }, [inputValue])
+
+  const toggleSearchBtnColor = () => {
+    const searchBtn = ref.current
+    // const searchBtn =document.querySelector('.search-btn')
+    if (!trimInputValue().length) {
+      searchBtn.style.backgroundColor = 'transparent'
+      searchBtn.style.color = 'black'
+    } else {
+      searchBtn.style.backgroundColor = 'rgb(70, 65, 221)'
+      searchBtn.style.color = 'white'
+    }
+  }
 
   const fetchData = async () => {
     try {
@@ -26,21 +42,20 @@ function App() {
     }
   }
 
-  const trimInputValue =()=>{
+  const trimInputValue = () => {
     // Remove space at both ends. two or more spaces into one.
     const value = inputValue.trim()
     const regEx = /\s{2,}/gi
     const newValue = value.replace(regEx, ' ')
     return newValue
   }
-  
 
   const getMaxChars = () => {
     const width = window.innerWidth
     let maxChars
     if (width <= 576) {
       maxChars = 100
-    } else  {
+    } else {
       maxChars = 200
     }
     return maxChars
@@ -67,15 +82,30 @@ function App() {
   }
 
   const handleChange = (e) => {
-    const value=e.target.value
+    const value = e.target.value
     setInputValue(value)
     setIsShow(true)
     if (!value.length) {
       setIsShow(false)
     }
   }
+
+  const handleMouseOver = () => {
+    const searchBtn = ref.current
+    searchBtn.style.backgroundColor = 'rgb(70, 65, 221)'
+    searchBtn.style.color = 'white'
+  }
+  const handleMouseLeave = () => {
+    if (!trimInputValue().length) {
+      const searchBtn = ref.current
+      searchBtn.style.backgroundColor = 'transparent'
+      searchBtn.style.color = 'black'
+    }
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (trimInputValue() === '') return
     fetchData()
   }
   const handleClick = (e) => {
@@ -171,7 +201,13 @@ function App() {
               <FontAwesomeIcon icon={faTimes} size='2x' />
             </button>
           )}
-          <button type='submit' className='btn search-btn'>
+          <button
+            type='submit'
+            className='btn search-btn'
+            ref={ref}
+            onMouseOver={handleMouseOver}
+            onMouseLeave={handleMouseLeave}
+          >
             <FontAwesomeIcon icon={faSearch} size='2x' />
           </button>
         </form>
