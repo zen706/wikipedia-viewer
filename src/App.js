@@ -6,14 +6,35 @@ const { log } = console
 
 function App() {
   const [wikiData, setWikiData] = useState(null)
+  const [page,setPage]=useState(0)
+  const [resultsLength, setResultsLength]=useState(0)
+  const [displayingPage,setDisplayingPage]=useState([])
   const [inputValue, setInputValue] = useState('')
   const [isShow, setIsShow] = useState(false)
+  const [indexIsShown,setIndexIsShown] = useState(false)
+  // const [loading,setLoading]=useState(false)
   const ref = React.useRef('')
+
+
+  const getSliceDataArray=(arr)=>{
+        const itemsPerPage = 20
+        const numberOfPages = Math.ceil(arr.length/itemsPerPage)
+        const newData=Array.from({length:numberOfPages},(_,index)=>{
+          const start =index*itemsPerPage
+          return arr.slice(start,start+itemsPerPage)
+        })
+        return newData
+  }
 
   // log(inputValue, wikiData)
   useEffect(() => {
     toggleSearchBtnColor()
   }, [inputValue])
+
+  useEffect(()=>{
+    if(!wikiData) return
+    setDisplayingPage(wikiData[page])
+  },[page])
 
   const toggleSearchBtnColor = () => {
     const searchBtn = ref.current
@@ -30,13 +51,25 @@ function App() {
   const fetchData = async () => {
     try {
       // log(inputValue)
-      const API = `https://en.wikipedia.org/w/api.php?&format=json&action=query&generator=search&gsrlimit=20&prop=pageimages|extracts&exchars=${getMaxChars()}&exintro&explaintext&exlimit=max&origin=*&gsrsearch=${trimInputValue()}`
+      const API = `https://en.wikipedia.org/w/api.php?&format=json&action=query&generator=search&gsrlimit=50&prop=pageimages|extracts&exchars=${getMaxChars()}&exlimit=max&explaintext&exintro&origin=*&gsrsearch=${trimInputValue()}`
       // add origin=*
+      // exlimit <= 20(max)
       const res = await fetch(API)
       const data = await res.json()
       // log(data)
       // log(results)
-      setWikiData(getSearchResults(data))
+      setResultsLength(getSearchResults(data).length)
+      log(resultsLength)
+      const newData = getSliceDataArray(getSearchResults(data))
+      console.log(newData)
+      setWikiData(newData)
+      setDisplayingPage(newData[0])
+      setPage(0)
+      if(getSearchResults(data).length>20) {
+        setIndexIsShown(true)
+      } else {
+        setIndexIsShown(false)
+      }
     } catch (err) {
       console.error(err)
     }
@@ -63,6 +96,8 @@ function App() {
 
   const getSearchResults = (rawData) => {
     const resultArray = []
+    console.log(rawData)
+
     if (rawData.hasOwnProperty('query')) {
       const results = rawData.query.pages
       Object.keys(results).forEach((key) => {
@@ -77,7 +112,7 @@ function App() {
         resultArray.push(item)
       })
     }
-
+    // console.log(resultArray)
     return resultArray
   }
 
@@ -112,18 +147,39 @@ function App() {
     setInputValue('')
     setIsShow(false)
   }
+  const handlePage=(index)=>{
+    setPage(index)
+  }
+  const prevPage=()=>{
+    setPage(prevState=>{
+      let prevPage =prevState-1
+      if(prevPage<0){
+        prevPage=wikiData.length-1
+      }
+      return prevPage
+    })
+  }
+  const nextPage=()=>{
+     setPage((prevState) => {
+       let nextPage = prevState + 1
+       if (nextPage > wikiData.length-1) {
+         nextPage = 0
+       }
+       return nextPage
+     })
+  }
+
 
   const alertMessage =
     wikiData &&
-    (wikiData.length ? (
-      <p className='result-length'>Displaying {wikiData.length} results.</p>
+    (resultsLength>0 ? (
+      <p className='result-length'>Page {page+1} of {resultsLength} results.</p>
     ) : (
       <p className='result-length'>Sorry, no result. please try again.</p>
     ))
 
-  const resultElements =
-    wikiData &&
-    wikiData.map((item, index) => {
+  const resultElements = displayingPage===undefined ||
+    displayingPage.map((item, index) => {
       const { id, desc, title, img } = item
       const pageURL = `https://en.wikipedia.org/?curid=${id}`
       return (
@@ -140,6 +196,15 @@ function App() {
         </article>
       )
     })
+
+  const pageIndexElements = wikiData && wikiData.map((_,index)=>{
+    return (
+      <button key={index} className={`btn page-btn ${page === index?"active-btn" :null}`} onClick={()=>{handlePage(index)}}>
+        {index+1}
+      </button>
+    )
+  })
+
   const colors = [
     'blue',
     'red',
@@ -214,6 +279,11 @@ function App() {
       </section>
       {alertMessage}
       <section className='result'>{resultElements}</section>
+      {indexIsShown && <div className="pageIndex">
+        <button className="btn prev-btn" onClick={prevPage}>prev</button>
+            {pageIndexElements}
+       <button className="btn next-btn" onClick={nextPage}>next</button>
+      </div>}
     </main>
   )
 }

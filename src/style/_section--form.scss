@@ -60,6 +60,9 @@ input {
   border-left: none;
   border-right: none;
   padding-right:1rem;
+  padding-left:1rem;
+}
+.clear-btn :nth-child(1):hover {
 }
 .search-btn {
   padding-left:0.5rem;
