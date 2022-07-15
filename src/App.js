@@ -12,7 +12,6 @@ function App() {
   const [inputValue, setInputValue] = useState('')
   const [isShow, setIsShow] = useState(false)
   const [indexIsShown,setIndexIsShown] = useState(false)
-  // const [loading,setLoading]=useState(false)
   const ref = React.useRef('')
 
 
@@ -26,7 +25,6 @@ function App() {
         return newData
   }
 
-  // log(inputValue, wikiData)
   useEffect(() => {
     toggleSearchBtnColor()
   }, [inputValue])
